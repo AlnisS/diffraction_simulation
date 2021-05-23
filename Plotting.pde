@@ -6,57 +6,49 @@ PVector rotate_phasor(PVector phasor, float rotation) {
 }
 
 
-//def create_colormap(wavelength):
-//  //global enhance
-//  rgb = wavelength_to_rgb(wavelength)
-//  newcolors = []
-//  for i in range(256):
-//    intensity = i/256
-//    if enhance:
-//      intensity = 1 - math.pow(1-i/256, 4)
-//    newcolors.append(np.array(rgb)*intensity)
-//  return colors.ListedColormap(newcolors)
-
+color[] create_colormap(float wavelength) {
+  //global enhance
+  PVector rgb = wavelength_to_rgb(wavelength);
+  color[] newcolors = new color[256];
+  for (int i = 0; i < 256; i++) {
+    float intensity = i/256.0;
+    if (enhance)
+      intensity = 1 - pow(1.0 - i / 256.0, 4);
+    PVector newcolor = PVector.mult(rgb, intensity); 
+    newcolors[i] = color(newcolor.x, newcolor.y, newcolor.z);
+  }
+  return newcolors;
+  //return colors.ListedColormap(newcolors)
+}
 
 void draw_screen() {
   translate(width / 2, height / 2);
-  scale(width / screen_width * 1, -height / screen_width * 1);
+  scale(width / screen_width, -height / screen_width);
   PVector[] points = create_points();
-  //println(points);
-
 
   int resolution = 100;
   if (hi_res)
     resolution = 200;
-  
-  ////loadPixels();
-  
+
   noStroke();
+
+  color[] cmap = create_colormap(wavelength);
 
   for (int i = 0; i < resolution; i++) {
     float z = map(i, 0.0, resolution - 1, -screen_width/2, screen_width/2 - (screen_width / (resolution - 1)));
     for (int j = 0; j < resolution; j++) {
       float x = map(j, 0.0, resolution - 1, -screen_width/2, screen_width/2 - (screen_width / (resolution - 1)));
-      //println(x, z, points[resolution * i + j]);
-      color c = color(points[resolution * i + j].mag() * 255);
+
+      float mag = points[resolution * i + j].mag();
+
+      color c = cmap[int(mag * 255)];
+
       fill(c);
       rect(x, z, screen_width / resolution * 1.01, screen_width / resolution * 1.01);
-      
+
       //pixels[width * i + j] = c;
-      println(z);
-      
-      //println(c);
     }
   }
-  //background(255);
-  //fill(255);
-  //noStroke();
-  //rect(0, 0, .000001, .000001);
-  //rect(0 / 2 * .95, 0 / 2 * .95, screen_width / resolution, screen_width / resolution);
-  
-  println(screen_width / resolution);
-  
-  //updatePixels();
 }
 
 //if no_screen:

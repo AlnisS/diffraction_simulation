@@ -1,3 +1,8 @@
+void init_phasor_progress_bar() {
+  // TODO: convert this and progress() into actual progress bar
+  // from spamming printing values to console 
+}
+
 void progress(float value, float max) {
   println(value / max);
 }
@@ -11,9 +16,13 @@ double IntensityMax = 255;
  * Taken from Earl F. Glynn's web page:
  * <a href="http://www.efg2.com/Lab/ScienceAndEngineering/Spectra.htm">Spectra Lab Report</a>
  */
-float[] wavelength_to_rgb(double Wavelength) {
+PVector wavelength_to_rgb(double Wavelength) {
   // convert from um to nm
-  Wavelength *= 1000.0;
+  //Wavelength *= 1000.0;
+  
+  // convert from m to nm
+  Wavelength *= 1e9;
+  
   double factor;
   double Red, Green, Blue;
 
@@ -68,5 +77,5 @@ float[] wavelength_to_rgb(double Wavelength) {
   rgb[2] = Blue == 0.0 ? 0 : (float) (IntensityMax * Math.pow(Blue * factor, Gamma));
 
   //return color(rgb[0], rgb[1], rgb[2]);
-  return rgb;
+  return new PVector(rgb[0], rgb[1], rgb[2]);
 }

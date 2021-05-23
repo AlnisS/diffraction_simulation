@@ -1,11 +1,16 @@
+// A diffraction grating mask
 class Mask {
+  // Cutout holes in the mask (slits/rectangles and circles)
   ArrayList<Hole> holes = new ArrayList<Hole>();
+  // Points randomly distributed throughout hole regions
   ArrayList<PVector> points = new ArrayList<PVector>();
-  
+
+  // Add hole to mask
   void add_hole(Hole hole) {
     holes.add(hole);
   }
-  
+
+  // Calculate total area of holes in mask
   float area_holes() {
     float area = 0;
     for (Hole hole : holes) {
@@ -17,18 +22,20 @@ class Mask {
     return area;
   }
   
+  // Add the given number of phasor points randomly distributed over a slit/rectangular hole
   void process_slit(Hole hole, float area_holes, int num_points) {
     float w = hole.w, h = hole.h;
     PVector r = hole.r;
     num_points = int(num_points * hole.w * hole.h / area_holes);
-    
+
     for (int i = 0; i < num_points; i++) {
       float this_x = random(-w/2, w/2);
       float this_z = random(-h/2, h/2);
       points.add(new PVector(r.x + this_x, r.y, r.z + this_z));
     }
   }
-  
+
+  // Add the given number of phasor points randomly distributed over a circular hole
   void process_circular(Hole hole, float area_holes, int num_points) {
     PVector r = hole.r;
     float radius = hole.radius;
@@ -41,30 +48,24 @@ class Mask {
       points.add(new PVector(r.x + this_x, r.y, r.z + this_z));
     }
   }
-  
+
+  // Add the given number of phasor points randomly distributed over
+  // the shapes of each hole in the mask
   PVector[] plot_points(int num_points) {
     float area_holes = area_holes();
-    //println(num_points);
     for (Hole hole : holes) {
-      if (hole.type == HoleType.SLIT)
+      if (hole.type == HoleType.SLIT) {
+        println("processing rectangular");
         process_slit(hole, area_holes, num_points);
-      if (hole.type == HoleType.CIRCULAR)
+      }
+      if (hole.type == HoleType.CIRCULAR) {
+        println("processing circular");
         process_circular(hole, area_holes, num_points);
+      }
     }
-    //x = [i[0] for i in self.points]
-    //z = [i[2] for i in self.points]
-
-    //fig, ax = plt.subplots(1, 1, figsize=(4,4))
-    //fig.tight_layout()
-    //ax.set_ylabel("z-position (m)")
-    //z_max = np.max(z)
-    //ax.set_ylim(-z_max*1.1, z_max*1.1)
-    //x_max = np.max(x)
-    //ax.set_xlabel("x-position (m)")
-    //ax.set_xlim(-x_max*1.1, x_max*1.1)
-    //ax.scatter(x, z)
-
-    //println(points.size());
+    
+    // TODO: add visualization of added points
+    
     return points.toArray(new PVector[points.size()]);
   }
 }
