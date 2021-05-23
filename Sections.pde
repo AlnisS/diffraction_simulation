@@ -100,26 +100,51 @@ PVector[] calc_phasor(PVector r_source, PVector[] r_points, float wavelength) {
   return result;
 }
 
-
 //###################################################################
 //### Section 5
 // Adds phasors from multiple points of light within mask
 PVector[] add_phasors(PVector[] r_sources, PVector[] r_points, float wavelength) {
+
+  PVector[][] total_phasors = new PVector[r_points.length][THREADS];
+
+  int pixels_per_thread = r_sources.length / THREADS;
+  for (int thread = 0; thread < THREADS; thread++) {
+    g_target = total_phasors;
+    g_target_i = thread;
+    g_r_sources = r_sources;
+    g_r_points = r_points;
+    g_wavelength = wavelength;
+    g_i_start = pixels_per_thread * thread;
+    g_i_upto = pixels_per_thread * (thread + 1);
+    if (thread == THREADS - 1)
+      g_i_upto = r_sources.length;
+    thread("add_phasors_section");
+    // Wait for thread to start
+    delay(50);
+  }
+
+  boolean ready = false;
+  while (!ready) {
+    delay(50);
+    ready = true;
+    for (int i = 0; i < THREADS; i++) {
+      println("Checking thread " + i);
+      if (total_phasors[i][0] == null) {
+        ready = false;
+        println("Not ready");
+      }
+    }
+  }
+
+  println("finished threaded portion");
+
   // Initialize all phasors to zero
   PVector[] total_phasor = new PVector[r_points.length];
-  for (int i = 0; i < total_phasor.length; i++)
+  for (int i = 0; i < total_phasor.length; i++) {
     total_phasor[i] = new PVector(0, 0);
-
-  for (int i = 0; i < r_sources.length; i++) {
-    PVector r_source = r_sources[i];
-    // Calculate influence of this source on all screen points
-    PVector[] phasor = calc_phasor(r_source, r_points, wavelength);
-
-    // Add influences from this source to total screen values
-    for (int j = 0; j < total_phasor.length; j++)
-      total_phasor[j].add(phasor[j]);
-
-    progress(i, r_sources.length);
+    for (int j = 0; j < THREADS; j++) {
+      total_phasor[i].add(total_phasors[j][i]);
+    }
   }
 
   // Scale phasors down such that max possible length is 1
@@ -128,6 +153,46 @@ PVector[] add_phasors(PVector[] r_sources, PVector[] r_points, float wavelength)
     phasor.div(r_sources.length);
 
   return total_phasor;
+}
+
+PVector[][] g_target;
+int g_target_i;
+PVector[] g_r_sources;
+PVector[] g_r_points;
+float g_wavelength;
+int g_i_start;
+int g_i_upto;
+
+// Thread for adding phasors over a section
+void add_phasors_section() {
+  PVector[][] target = g_target;
+  int target_i = g_target_i;
+  PVector[] r_sources = g_r_sources;
+  PVector[] r_points = g_r_points;
+  float wavelength = g_wavelength;
+  int i_start = g_i_start;
+  int i_upto = g_i_upto;
+
+  println(target_i);
+  println(target[target_i]);
+
+  PVector[] total_phasor = new PVector[r_points.length];
+  for (int i = 0; i < total_phasor.length; i++) {
+    total_phasor[i] = new PVector(0, 0);
+  }
+  for (int i = i_start; i < i_upto; i++) {
+    PVector r_source = r_sources[i];
+    // Calculate influence of this source on all screen points
+    PVector[] phasor = calc_phasor(r_source, r_points, wavelength);
+
+    // Add influences from this source to total screen values
+    for (int j = 0; j < total_phasor.length; j++)
+      total_phasor[j].add(phasor[j]);
+
+    progress(i - i_start, i_upto - i_start);
+  }
+  target[target_i] = total_phasor;
+  println("done");
 }
 
 

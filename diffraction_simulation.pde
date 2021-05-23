@@ -2,7 +2,9 @@
 // Diffraction grating mask data
 Mask mask = new Mask();
 // Randomly distributed points throughout mask holes
-PVector[] r_sources; 
+PVector[] r_sources;
+// Number of threads to use for simulation
+int THREADS = 8;
 
 void setup() {
   size(600, 600);
@@ -12,6 +14,8 @@ void setup() {
 }
 
 void draw() {
+  int start = millis();
   noLoop();
   draw_screen();
+  println("time: " + (millis() - start) / 1000.0);
 }

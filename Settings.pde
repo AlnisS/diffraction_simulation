@@ -24,7 +24,7 @@ float y_laser = -0.1;
 // Enhance dim light:
 boolean enhance = true;
 // High resolution:
-boolean hi_res = false;
+boolean hi_res = true;
 // Only show intensity along z = 0 line:
 boolean no_screen = false;
 // Number of points per hole in mask
