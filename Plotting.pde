@@ -1,24 +1,19 @@
-
-
-
-PVector rotate_phasor(PVector phasor, float rotation) {
-  return phasor.copy().rotate(rotation);
-}
-
-
+// Map of intensity value 0-255 -> color value
 color[] create_colormap(float wavelength) {
-  //global enhance
   PVector rgb = wavelength_to_rgb(wavelength);
   color[] newcolors = new color[256];
+
   for (int i = 0; i < 256; i++) {
-    float intensity = i/256.0;
-    if (enhance)
+    float intensity = i / 256.0;
+
+    if (enhance)  // Use quartic mapping to expand dynamic range
       intensity = 1 - pow(1.0 - i / 256.0, 4);
+
     PVector newcolor = PVector.mult(rgb, intensity); 
     newcolors[i] = color(newcolor.x, newcolor.y, newcolor.z);
   }
+
   return newcolors;
-  //return colors.ListedColormap(newcolors)
 }
 
 void draw_screen() {
@@ -30,49 +25,28 @@ void draw_screen() {
   if (hi_res)
     resolution = 200;
 
+  // Don't draw sides of rectangular pixel things
   noStroke();
 
   color[] cmap = create_colormap(wavelength);
 
+  // For every row...
   for (int i = 0; i < resolution; i++) {
+    // Calculate physical z height
     float z = map(i, 0.0, resolution - 1, -screen_width/2, screen_width/2 - (screen_width / (resolution - 1)));
+    // For every column (point within row)...
     for (int j = 0; j < resolution; j++) {
+      // Calculate physical x position
       float x = map(j, 0.0, resolution - 1, -screen_width/2, screen_width/2 - (screen_width / (resolution - 1)));
 
-      float mag = points[resolution * i + j].mag();
+      // Note that this intensity calculation is not physically accurate
+      // Physical intensity is magnitude squared, but that requires a much wider dynamic range to show
+      float intensity = points[resolution * i + j].mag();
 
-      color c = cmap[int(mag * 255)];
+      color c = cmap[int(intensity * 255)];
 
       fill(c);
       rect(x, z, screen_width / resolution * 1.01, screen_width / resolution * 1.01);
-
-      //pixels[width * i + j] = c;
     }
   }
 }
-
-//if no_screen:
-//  fig, ax2 = plt.subplots(1, 1, figsize=(8,4))
-//  ax2.set_ylabel("Amplitude along center of screen")
-//  ax2.set_ylim(0.0, 1.0)
-//  ax2.grid(True)
-//  ax2.set_xlabel("x-position (m)")
-//  ax2.set_xlim(-screen_width/2, screen_width/2)
-//  plot1D = ax2.plot(x_range, phasor_mag)[0]
-//else:
-//  fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8,4))
-//  cmap = create_colormap(wavelength)
-//  fig.tight_layout()
-//  ax1.axis('square')
-//  ax1.set_ylabel("z-position (m)")
-//  ax1.set_ylim(-screen_width/2, screen_width/2)
-//  ax2.set_ylabel("Amplitude along center of screen")
-//  ax2.set_ylim(0.0, 1.0)
-//  ax1.set_xlabel("x-position (m)")
-//  ax1.set_xlim(-screen_width/2, screen_width/2)
-//  ax2.grid(True)
-//  ax2.set_xlabel("x-position (m)")
-//  ax2.set_xlim(-screen_width/2, screen_width/2)
-//  #phasor_mag = np.multiply(phasor_mag, phasor_mag>(4.604/np.sqrt(2*num_points)))
-//  plot2D = ax1.pcolor(x_points, z_points, phasor_mag, cmap=cmap, vmin=0, vmax=1)
-//  plot1D = ax2.plot(x_range, phasor_mag[int(resolution/2)])[0]

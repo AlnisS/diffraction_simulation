@@ -21,7 +21,7 @@ class Mask {
     }
     return area;
   }
-  
+
   // Add the given number of phasor points randomly distributed over a slit/rectangular hole
   void process_slit(Hole hole, float area_holes, int num_points) {
     float w = hole.w, h = hole.h;
@@ -63,9 +63,9 @@ class Mask {
         process_circular(hole, area_holes, num_points);
       }
     }
-    
+
     // TODO: add visualization of added points
-    
+
     return points.toArray(new PVector[points.size()]);
   }
 }

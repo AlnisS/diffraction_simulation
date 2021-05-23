@@ -6,7 +6,7 @@ PVector[] r_sources;
 
 void setup() {
   size(600, 600);
-  
+
   // Add slits to mask according to settings in the Mask section
   many_slits();
 }

@@ -105,35 +105,27 @@ PVector[] calc_phasor(PVector r_source, PVector[] r_points, float wavelength) {
 //### Section 5
 // Adds phasors from multiple points of light within mask
 PVector[] add_phasors(PVector[] r_sources, PVector[] r_points, float wavelength) {
-  //# Initalize total phasor to zero
+  // Initialize all phasors to zero
   PVector[] total_phasor = new PVector[r_points.length];
   for (int i = 0; i < total_phasor.length; i++)
     total_phasor[i] = new PVector(0, 0);
 
-  //# Loop over all points in the mask
-  //for i, r_source in enumerate(r_sources):
-  int j = 0;
-  for (PVector r_source : r_sources) {
-    //# Phasor x and y component at screen due to point source
+  for (int i = 0; i < r_sources.length; i++) {
+    PVector r_source = r_sources[i];
+    // Calculate influence of this source on all screen points
     PVector[] phasor = calc_phasor(r_source, r_points, wavelength);
 
-    for (int i = 0; i < total_phasor.length; i++)
-      total_phasor[i].add(phasor[i]);
+    // Add influences from this source to total screen values
+    for (int j = 0; j < total_phasor.length; j++)
+      total_phasor[j].add(phasor[j]);
 
-    //# Add phasor from this point to the total phasor
-    //total_phasor_x += phasor.x
-    //total_phasor_y += phasor.y
-
-    println((++j * 1.0) / r_sources.length);
-    //progbar.update(progress(i+1, len(r_sources)))
+    progress(i, r_sources.length);
   }
 
-
+  // Scale phasors down such that max possible length is 1
+  // (all addition was of unit vectors)
   for (PVector phasor : total_phasor)
     phasor.div(r_sources.length);
-
-  //total_phasor_x /= r_sources.length
-  //total_phasor_y /= r_sources.length
 
   return total_phasor;
 }

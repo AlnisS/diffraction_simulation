@@ -1,6 +1,6 @@
 void init_phasor_progress_bar() {
   // TODO: convert this and progress() into actual progress bar
-  // from spamming printing values to console 
+  // from spamming printing values to console
 }
 
 void progress(float value, float max) {
@@ -19,10 +19,10 @@ double IntensityMax = 255;
 PVector wavelength_to_rgb(double Wavelength) {
   // convert from um to nm
   //Wavelength *= 1000.0;
-  
+
   // convert from m to nm
   Wavelength *= 1e9;
-  
+
   double factor;
   double Red, Green, Blue;
 

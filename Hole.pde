@@ -6,7 +6,7 @@ class Hole {
   float w, h, radius;
   // Position of center
   PVector r;
-  
+
   Hole(HoleType type, PVector r, float w, float h, float radius) {
     this.type = type;
     this.r = r;
