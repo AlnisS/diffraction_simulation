@@ -1,0 +1,1 @@
+enum HoleType { SLIT, CIRCULAR }
