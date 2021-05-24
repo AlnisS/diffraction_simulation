@@ -106,6 +106,7 @@ PVector[] calc_phasor(PVector r_source, PVector[] r_points, float wavelength) {
 PVector[] add_phasors(PVector[] r_sources, PVector[] r_points, float wavelength) {
 
   PVector[][] total_phasors = new PVector[r_points.length][THREADS];
+  Arrays.fill(progress, 0.0);
 
   int pixels_per_thread = r_sources.length / THREADS;
   for (int thread = 0; thread < THREADS; thread++) {
@@ -125,13 +126,16 @@ PVector[] add_phasors(PVector[] r_sources, PVector[] r_points, float wavelength)
 
   boolean ready = false;
   while (!ready) {
-    delay(50);
+    delay(200);
+    println("\n");
     ready = true;
     for (int i = 0; i < THREADS; i++) {
-      println("Checking thread " + i);
+      print("Checking thread " + i + "... ");
       if (total_phasors[i][0] == null) {
         ready = false;
-        println("Not ready");
+        println("Not ready. " + progress[i]);
+      } else {
+        println("Ready!");
       }
     }
   }
@@ -155,6 +159,8 @@ PVector[] add_phasors(PVector[] r_sources, PVector[] r_points, float wavelength)
   return total_phasor;
 }
 
+float[] progress = new float[THREADS];
+
 PVector[][] g_target;
 int g_target_i;
 PVector[] g_r_sources;
@@ -174,7 +180,7 @@ void add_phasors_section() {
   int i_upto = g_i_upto;
 
   println(target_i);
-  println(target[target_i]);
+  println(target[target_i ]);
 
   PVector[] total_phasor = new PVector[r_points.length];
   for (int i = 0; i < total_phasor.length; i++) {
@@ -188,8 +194,9 @@ void add_phasors_section() {
     // Add influences from this source to total screen values
     for (int j = 0; j < total_phasor.length; j++)
       total_phasor[j].add(phasor[j]);
-
-    progress(i - i_start, i_upto - i_start);
+    
+    progress[target_i] = 1.0 * (i - i_start) / (i_upto - i_start);
+    //progress(i - i_start, i_upto - i_start);
   }
   target[target_i] = total_phasor;
   println("done");
