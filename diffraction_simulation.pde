@@ -6,8 +6,15 @@ PVector[] r_sources;
 // Number of threads to use for simulation
 int THREADS = 8;
 
+void settings() {
+  if (no_screen)
+    size(no_screen_resolution, 128);
+  else
+    size(600, 600);
+}
+
 void setup() {
-  size(600, 600);
+  //size(600, 600);
 
   // Add slits to mask according to settings in the Mask section
   many_slits();

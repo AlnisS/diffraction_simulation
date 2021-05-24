@@ -194,7 +194,7 @@ void add_phasors_section() {
     // Add influences from this source to total screen values
     for (int j = 0; j < total_phasor.length; j++)
       total_phasor[j].add(phasor[j]);
-    
+
     progress[target_i] = 1.0 * (i - i_start) / (i_upto - i_start);
     //progress(i - i_start, i_upto - i_start);
   }
@@ -210,6 +210,16 @@ PVector[] create_points() {
   if (no_screen) {
     //x_range = np.linspace(-screen_width/2, screen_width/2, 10000)
     //r_points = [x_range, screen_y, 0]
+    PVector[] r_points = new PVector[no_screen_resolution];
+
+    for (int i = 0; i < r_points.length; i++) {
+      float x = map(i / (r_points.length - 1.0), 0.0, 1.0, -screen_width / 2, screen_width / 2);
+      r_points[i] = new PVector(x, screen_y, 0.0);
+    }
+
+    println("Adding phasors");
+    PVector[] phasor = add_phasors(r_sources, r_points, wavelength);
+    return phasor;
   } else {
     int resolution = 100;
     if (hi_res)
@@ -243,6 +253,4 @@ PVector[] create_points() {
     PVector[] phasor = add_phasors(r_sources, r_points, wavelength);
     return phasor;
   }
-
-  return null;
 }

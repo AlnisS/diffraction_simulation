@@ -26,6 +26,8 @@ boolean enhance = true;
 // High resolution:
 boolean hi_res = true;
 // Only show intensity along z = 0 line:
-boolean no_screen = false;
+boolean no_screen = true;
+// Resolution of single row output
+int no_screen_resolution = 1000;
 // Number of points per hole in mask
 int num_points = hi_res ? 10000 : 1000;
