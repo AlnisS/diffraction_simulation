@@ -8,7 +8,7 @@ int THREADS = 8;
 
 void settings() {
   if (no_screen)
-    size(no_screen_resolution, 128);
+    size(no_screen_resolution, 400);
   else
     size(600, 600);
 }
@@ -22,7 +22,10 @@ void setup() {
 
 void draw() {
   int start = millis();
+  background(0);
   noLoop();
   draw_screen();
+  if (no_screen)
+    filter(BLUR, 3);
   println("time: " + (millis() - start) / 1000.0);
 }
