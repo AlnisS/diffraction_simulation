@@ -66,7 +66,11 @@ double calc_phase_source(PVector r_source, float wavelength) {
 
   // Other stuff is useful if laser is angled, makes out of phase points, etc.
   // However, in the simple case, this saves computation time
-  return 0d;
+  //return 0d;
+  
+  // Shift the phase depending on the slot x position
+  //return phase_shift * TWO_PI * r_source.x / d;
+  return TWO_PI * r_source.x / d * phase_shift;
 }
 
 
@@ -80,6 +84,7 @@ PVector[] calc_phasor(PVector r_source, PVector[] r_points, float wavelength) {
   // Phase at source point; will be zero for simple laser setup
   // Non-zero for angled laser, light arriving out of phase, etc.
   double phasei = calc_phase_source(r_source, wavelength);
+  //println(phasei);
   // Phases at points; initialzed to zero
   double[] phase = new double[r_points.length];
   Arrays.fill(phase, phasei);
@@ -127,15 +132,15 @@ PVector[] add_phasors(PVector[] r_sources, PVector[] r_points, float wavelength)
   boolean ready = false;
   while (!ready) {
     delay(200);
-    println("\n");
+    //println("\n");
     ready = true;
     for (int i = 0; i < THREADS; i++) {
-      print("Checking thread " + i + "... ");
+      //print("Checking thread " + i + "... ");
       if (total_phasors[i][0] == null) {
         ready = false;
-        println("Not ready. " + progress[i]);
+        //println("Not ready. " + progress[i]);
       } else {
-        println("Ready!");
+        //println("Ready!");
       }
     }
   }
@@ -179,8 +184,8 @@ void add_phasors_section() {
   int i_start = g_i_start;
   int i_upto = g_i_upto;
 
-  println(target_i);
-  println(target[target_i ]);
+  //println(target_i);
+  //println(target[target_i ]);
 
   PVector[] total_phasor = new PVector[r_points.length];
   for (int i = 0; i < total_phasor.length; i++) {
@@ -199,7 +204,7 @@ void add_phasors_section() {
     //progress(i - i_start, i_upto - i_start);
   }
   target[target_i] = total_phasor;
-  println("done");
+  //println("done");
 }
 
 

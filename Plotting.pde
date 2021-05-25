@@ -16,15 +16,26 @@ color[] create_colormap(float wavelength) {
   return newcolors;
 }
 
+void draw_graph(PVector[] points) {
+  float last_y = 0.0;
+  stroke(255);
+  for (int i = 0; i < points.length; i++) {
+    float intensity = points[i].mag();
+    float y = 20 + 300 * intensity;
+    if (i > 0)
+      line(i-1, last_y, i, y);
+    last_y = y;
+  }
+}
+
 void draw_screen() {
-  translate(width / 2, height / 2);
-  scale(width / screen_width, -height / screen_width);
   PVector[] points = create_points();
   if (no_screen) {
+    background(0);
     loadPixels();
     color[] cmap = create_colormap(wavelength);
     for (int i = 0; i < points.length; i++) {
-      for (int j = height / 2 - 5; j < height / 2 + 6; j++) {
+      for (int j = 10 - 5; j < 10 + 6; j++) {
         float intensity = points[i].mag();
         //println(intensity);
         color c = cmap[int(intensity * 255)];
@@ -32,7 +43,21 @@ void draw_screen() {
       }
     }
     updatePixels();
+
+    draw_graph(points);
+
+    filter(BLUR, 3);
+
+    draw_graph(points);
+    
+    stroke(127);
+    line(0, 20, width, 20);
+    line(0, 320, width, 320);
+    line(width / 2, 0, width / 2, 335);
   } else {
+    translate(width / 2, height / 2);
+    scale(width / screen_width, -height / screen_width);
+    background(0);
     int resolution = 100;
     if (hi_res)
       resolution = 200;
