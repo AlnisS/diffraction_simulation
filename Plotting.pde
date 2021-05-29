@@ -22,6 +22,7 @@ void draw_graph(PVector[] points) {
   for (int i = 0; i < points.length; i++) {
     float intensity = points[i].mag();
     float y = 20 + 300 * intensity;
+    //println(intensity);
     if (i > 0)
       line(i-1, last_y, i, y);
     last_y = y;
@@ -34,7 +35,9 @@ void draw_screen() {
     background(0);
     loadPixels();
     color[] cmap = create_colormap(wavelength);
+    out.print(phase_shift + ",");
     for (int i = 0; i < points.length; i++) {
+      out.print(points[i].mag() + (i == points.length - 1 ? "" : ","));
       for (int j = 10 - 5; j < 10 + 6; j++) {
         float intensity = points[i].mag();
         //println(intensity);
@@ -42,6 +45,7 @@ void draw_screen() {
         pixels[i + j * width] = c;
       }
     }
+    out.println();
     updatePixels();
 
     draw_graph(points);
@@ -50,10 +54,26 @@ void draw_screen() {
 
     draw_graph(points);
     
-    stroke(127);
+    stroke(255);
     line(0, 20, width, 20);
+    line(width / 2, 0, width / 2, 330);
+    stroke(127, 127);
     line(0, 320, width, 320);
-    line(width / 2, 0, width / 2, 335);
+    fill(255, 0, 255);
+    text("0.0 intensity", width / 2 + 2, 30);
+    text("1.0 intensity", width / 2 + 2, 330);
+    
+    stroke(127, 127);
+    int labels = 11;
+    for (int j = 0; j < labels; j++) {
+      // Map position (column) number to physical x position
+      float x = map(j / (labels - 1.0), 0, 1, -screen_width/2, screen_width/2);
+      // Add point to screen calculation location points
+      int screen_x = j * width / (labels - 1);
+      line(screen_x, 320, screen_x, 0);
+      text(String.format("%.0f mm", x * 1000), screen_x + 2, 320-2);
+    }
+    
   } else {
     translate(width / 2, height / 2);
     scale(width / screen_width, -height / screen_width);

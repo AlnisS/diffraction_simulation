@@ -149,12 +149,22 @@ PVector[] add_phasors(PVector[] r_sources, PVector[] r_points, float wavelength)
 
   // Initialize all phasors to zero
   PVector[] total_phasor = new PVector[r_points.length];
+  
+  float max_seen = 0.0;
+  int max_i = -1;
   for (int i = 0; i < total_phasor.length; i++) {
     total_phasor[i] = new PVector(0, 0);
     for (int j = 0; j < THREADS; j++) {
       total_phasor[i].add(total_phasors[j][i]);
+      if (total_phasor[i].mag() > max_seen) {
+        max_seen = total_phasor[i].mag();
+        max_i = i;
+      }
     }
   }
+  
+  //println("Max seen: " + max_seen + " at " + max_i);
+  //println("Source count: " + r_sources.length);
 
   // Scale phasors down such that max possible length is 1
   // (all addition was of unit vectors)
